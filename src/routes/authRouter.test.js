@@ -22,7 +22,8 @@ const checkGoodAuth = (res) => {
     /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
   );
 
-  const { password, ...user } = { ...testUser, roles: [{ role: "diner" }] };
+  const user = { ...testUser, roles: [{ role: "diner" }] };
+  delete user["password"];
   expect(res.body.user).toMatchObject(user);
 };
 
