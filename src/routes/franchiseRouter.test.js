@@ -14,7 +14,8 @@ const generateEmail = () =>
   Math.random().toString(36).substring(2, 12) + "@test.com";
 
 let adminAuthToken;
-const admin = { name: "常用名字", email: "a@jwt.com", password: "admin" };
+const admin = { name: "Admin", email: "", password: "admin", role: "admin" };
+let adminId;
 
 let franchiseId;
 const franchisee = { name: "Franchisee", email: "", password: "f" };
@@ -35,9 +36,10 @@ const sendCreateReq = async (authToken, franchise) => {
 };
 
 beforeAll(async () => {
-  const loginRes = await request.put("/api/auth").send(admin);
-  adminAuthToken = loginRes.body.token;
-  console.log(loginRes.body);
+  admin.email = generateEmail();
+  const regRes = await request.post("/api/auth").send(admin);
+  adminAuthToken = regRes.body.token;
+  adminId = regRes.body.user.id;
 
   franchisee.email = generateEmail();
   const registerRes = await request.post("/api/auth").send(franchisee);
@@ -68,19 +70,21 @@ afterAll(async () => {
   }
 });
 
-describe.only("createFranchise", () => {
-  test.only("works for an admin through admin", async () => {
+describe("createFranchise", () => {
+  test("works for an admin through admin", async () => {
     const franchise = getFranchise(admin.email);
-    console.log(adminAuthToken);
     const createRes = await sendCreateReq(adminAuthToken, franchise);
-    console.log(createRes.body);
 
     expect(createRes.status).toBe(200);
 
     const { name, admins, id } = createRes.body;
     franchiseId = id;
     const expectedAdmins = [
-      ...franchise.admins.map((obj) => ({ ...obj, id: 1, name: admin.name })),
+      ...franchise.admins.map((obj) => ({
+        ...obj,
+        id: adminId,
+        name: admin.name,
+      })),
     ];
 
     expect(name).toBe(franchise.name);

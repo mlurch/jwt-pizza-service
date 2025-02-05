@@ -89,7 +89,7 @@ authRouter.authenticateToken = (req, res, next) => {
 authRouter.post(
   "/",
   asyncHandler(async (req, res) => {
-    const { name, email, password } = req.body;
+    const { name, email, password, role } = req.body;
     if (!name || !email || !password) {
       return res
         .status(400)
@@ -99,7 +99,7 @@ authRouter.post(
       name,
       email,
       password,
-      roles: [{ role: Role.Diner }],
+      roles: [role ? { role } : { role: Role.Diner }],
     });
     const auth = await setAuth(user);
     res.json({ user: user, token: auth });
