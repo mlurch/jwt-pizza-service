@@ -37,6 +37,7 @@ const sendCreateReq = async (authToken, franchise) => {
 beforeAll(async () => {
   const loginRes = await request.put("/api/auth").send(admin);
   adminAuthToken = loginRes.body.token;
+  console.log(loginRes.body);
 
   franchisee.email = generateEmail();
   const registerRes = await request.post("/api/auth").send(franchisee);
@@ -67,10 +68,12 @@ afterAll(async () => {
   }
 });
 
-describe("createFranchise", () => {
-  test("works for an admin through admin", async () => {
+describe.only("createFranchise", () => {
+  test.only("works for an admin through admin", async () => {
     const franchise = getFranchise(admin.email);
+    console.log(adminAuthToken);
     const createRes = await sendCreateReq(adminAuthToken, franchise);
+    console.log(createRes.body);
 
     expect(createRes.status).toBe(200);
 
