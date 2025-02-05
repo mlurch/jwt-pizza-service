@@ -1,15 +1,17 @@
 const tableCreateStatements = [
-  `CREATE TABLE IF NOT EXISTS auth (
-    token VARCHAR(512) PRIMARY KEY,
-    userId INT NOT NULL
-  )`,
-
   `CREATE TABLE IF NOT EXISTS user (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     UNIQUE(email)
+  )`,
+
+  `CREATE TABLE IF NOT EXISTS auth (
+    token VARCHAR(512) PRIMARY KEY,
+    userId INT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES user(id)
+        ON DELETE CASCADE
   )`,
 
   `CREATE TABLE IF NOT EXISTS menu (
@@ -37,7 +39,8 @@ const tableCreateStatements = [
     userId INT NOT NULL,
     role VARCHAR(255) NOT NULL,
     objectId INT NOT NULL,
-    FOREIGN KEY (userId) REFERENCES user(id),
+    FOREIGN KEY (userId) REFERENCES user(id)
+        ON DELETE CASCADE,
     INDEX (objectId)
   )`,
 

@@ -1,10 +1,17 @@
 const request = require("supertest");
-const { beforeEach, expect, test, describe } = require("@jest/globals");
+const {
+  beforeEach,
+  expect,
+  test,
+  describe,
+  afterEach,
+} = require("@jest/globals");
 const app = require("../service");
 
 const testUser = { name: "pizza diner", email: "reg@test.com", password: "a" };
 let testUserAuthToken;
 let testUserId;
+let extraToken;
 
 const generateRandomEmail = () =>
   Math.random().toString(36).substring(2, 12) + "@test.com";
@@ -14,6 +21,22 @@ beforeEach(async () => {
   const registerRes = await request(app).post("/api/auth").send(testUser);
   testUserAuthToken = registerRes.body.token;
   testUserId = registerRes.body.user.id;
+});
+
+afterEach(async () => {
+  if (testUserAuthToken) {
+    await request(app)
+      .delete("/api/auth")
+      .set("Authorization", `Bearer ${testUserAuthToken}`);
+    testUserAuthToken = null;
+  }
+
+  if (extraToken) {
+    await request(app)
+      .delete("/api/auth")
+      .set("Authorization", `Bearer ${extraToken}`);
+    extraToken = null;
+  }
 });
 
 const checkGoodAuth = (res) => {
@@ -30,6 +53,7 @@ const checkGoodAuth = (res) => {
 test("register", async () => {
   testUser.email = generateRandomEmail();
   const regRes = await request(app).post("/api/auth").send(testUser);
+  extraToken = regRes.body.token;
   checkGoodAuth(regRes);
 });
 
@@ -40,11 +64,15 @@ describe("Test login", () => {
 
   test("login once", async () => {
     const loginRes = await login();
+    extraToken = loginRes.body.token;
+
     checkGoodAuth(loginRes);
   });
 
   test("login multiple times", async () => {
     let loginRes = await login();
+    extraToken = loginRes.body.token;
+
     checkGoodAuth(loginRes);
 
     loginRes = await login();
@@ -62,6 +90,7 @@ describe("Test logout", () => {
 
   test("logout user that is logged in", async () => {
     const logResp = await logout();
+    testUserAuthToken = null;
     expect(logResp.status).toBe(200);
   });
 
