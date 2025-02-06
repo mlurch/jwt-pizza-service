@@ -7,6 +7,7 @@ const {
   afterEach,
 } = require("@jest/globals");
 const app = require("../service");
+const { Role } = require("../model/model");
 
 const testUser = { name: "pizza diner", email: "reg@test.com", password: "a" };
 let testUserAuthToken;
@@ -39,43 +40,49 @@ afterEach(async () => {
   }
 });
 
-const checkGoodAuth = (res) => {
-  expect(res.status).toBe(200);
-  expect(res.body.token).toMatch(
-    /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
-  );
-
-  const user = { ...testUser, roles: [{ role: "diner" }] };
-  delete user["password"];
-  expect(res.body.user).toMatchObject(user);
-};
-
 test("register", async () => {
   testUser.email = generateRandomEmail();
   const regRes = await request(app).post("/api/auth").send(testUser);
   extraToken = regRes.body.token;
-  checkGoodAuth(regRes);
+  expect(regRes.status).toBe(200);
+  expect(regRes.body.token).toMatch(
+    /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
+  );
+
+  const user = { ...testUser, roles: [{ role: Role.Diner }] };
+  delete user["password"];
+  expect(regRes.body.user).toMatchObject(user);
 });
 
 describe("Test login", () => {
-  const login = async () => {
-    return await request(app).put("/api/auth").send(testUser);
-  };
-
   test("login once", async () => {
-    const loginRes = await login();
+    const loginRes = await request(app).put("/api/auth").send(testUser);
     extraToken = loginRes.body.token;
 
-    checkGoodAuth(loginRes);
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.body.token).toMatch(
+      /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
+    );
+
+    const user = { ...testUser, roles: [{ role: Role.Diner }] };
+    delete user["password"];
+    expect(loginRes.body.user).toMatchObject(user);
   });
 
   test("login multiple times", async () => {
-    let loginRes = await login();
+    let loginRes = await request(app).put("/api/auth").send(testUser);
     extraToken = loginRes.body.token;
 
-    checkGoodAuth(loginRes);
+    expect(loginRes.status).toBe(200);
+    expect(loginRes.body.token).toMatch(
+      /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
+    );
 
-    loginRes = await login();
+    const user = { ...testUser, roles: [{ role: Role.Diner }] };
+    delete user["password"];
+    expect(loginRes.body.user).toMatchObject(user);
+
+    loginRes = await request(app).put("/api/auth").send(testUser);
     expect(loginRes.status).toBe(500);
     expect(loginRes.body.message.includes("Duplicate entry")).toBeTruthy();
   });
