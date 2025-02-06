@@ -225,15 +225,54 @@ describe("createStore", () => {
 });
 
 describe("deleteStore", () => {
-  test("admin can delete existing store from existing franchise", async () => {});
+  let storeId;
 
-  test("franchisee cannot delete existing store from existing franchise", async () => {});
+  beforeEach(async () => {
+    const store = getStore(existingFranchiseIds[0]);
+    const createRes = await request
+      .post(`/api/franchise/${existingFranchiseIds[0]}/store`)
+      .set("Authorization", `Bearer ${adminAuthToken}`)
+      .send(store);
+    storeId = createRes.body.id;
+  });
 
-  test("admin cannot delete nonexistent store from existing franchise", async () => {});
+  test("admin can delete existing store from existing franchise", async () => {
+    const delRes = await request
+      .delete(`/api/franchise/${existingFranchiseIds[0]}/store/${storeId}`)
+      .set("Authorization", `Bearer ${adminAuthToken}`);
 
-  test("admin cannot delete existing store from wrong franchise", async () => {});
+    expect(delRes.status).toBe(200);
+    expect(delRes.body.message).toBe("store deleted");
+  });
+
+  test("franchisee cannot delete existing store from existing franchise", async () => {
+    const delRes = await request
+      .delete(`/api/franchise/${existingFranchiseIds[0]}/store/${storeId}`)
+      .set("Authorization", `Bearer ${franchiseeAuthToken}`);
+
+    expect(delRes.status).toBe(403);
+    expect(delRes.body.message).toBe("unable to delete a store");
+  });
 });
 
-test("getFranchises lists as expected", async () => {});
+test("getFranchises lists as expected", async () => {
+  const listRes = await request.get("/api/franchise");
+  expect(listRes.status).toBe(200);
+});
 
-test("getUserFranchises lists as expected", async () => {});
+test("getUserFranchises lists as expected", async () => {
+  let listRes = await request
+    .get(`/api/franchise/${franchiseeId}`)
+    .set("Authorization", `Bearer ${adminAuthToken}`);
+  expect(listRes.status).toBe(200);
+
+  listRes = await request
+    .get(`/api/franchise/${franchiseeId}`)
+    .set("Authorization", `Bearer ${franchiseeAuthToken}`);
+  expect(listRes.status).toBe(200);
+
+  listRes = await request
+    .get(`/api/franchise/${adminId}`)
+    .set("Authorization", `Bearer ${franchiseeAuthToken}`);
+  expect(listRes.status).toBe(200);
+});

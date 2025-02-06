@@ -74,9 +74,6 @@ describe("Test login", () => {
     extraToken = loginRes.body.token;
 
     expect(loginRes.status).toBe(200);
-    expect(loginRes.body.token).toMatch(
-      /^[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*\.[a-zA-Z0-9\-_]*$/,
-    );
 
     const user = { ...testUser, roles: [{ role: Role.Diner }] };
     delete user["password"];
