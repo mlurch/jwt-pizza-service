@@ -3,9 +3,10 @@ const jwt = require("jsonwebtoken");
 const config = require("../config.js");
 const { asyncHandler } = require("../endpointHelper.js");
 const { DB, Role } = require("../database/database.js");
+const metrics = require("../metrics");
 
 const authRouter = express.Router();
-
+authRouter.use(metrics.authAttempts);
 authRouter.endpoints = [
   {
     method: "POST",
