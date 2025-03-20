@@ -151,7 +151,7 @@ function getMemoryUsagePercentage() {
 }
 
 function sendMetricsPeriodically(period) {
-  const timer = setInterval(() => {
+  setInterval(() => {
     try {
       sendMetricToGrafana("postRequests", postReqs, "sum", "1");
       sendMetricToGrafana("putRequests", putReqs, "sum", "1");
