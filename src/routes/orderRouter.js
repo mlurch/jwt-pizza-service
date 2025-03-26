@@ -4,6 +4,7 @@ const { Role, DB } = require("../database/database.js");
 const { authRouter } = require("./authRouter.js");
 const { asyncHandler, StatusCodeError } = require("../endpointHelper.js");
 const metrics = require("../metrics");
+const logger = require("../logger");
 
 const orderRouter = express.Router();
 orderRouter.use(metrics.pizzaCounter);
@@ -113,6 +114,7 @@ orderRouter.get(
 orderRouter.post(
   "/",
   authRouter.authenticateToken,
+  logger.factoryLogger,
   asyncHandler(async (req, res) => {
     const orderReq = req.body;
     const order = await DB.addDinerOrder(req.user, orderReq);

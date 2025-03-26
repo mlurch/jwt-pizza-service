@@ -20,6 +20,29 @@ class Logger {
     next();
   };
 
+  factoryLogger = (req, res, next) => {
+    let send = res.send;
+    res.send = (resBody) => {
+      const logData = {
+        order: JSON.stringify(resBody.order),
+      };
+      const level = this.statusToLogLevel(res.statusCode);
+      this.log(level, "factory", logData);
+      res.send = send;
+      return res.send(resBody);
+    };
+    next();
+  };
+
+  exceptionLogger = (err, req, res, next) => {
+    console.log("pee pee poo poo");
+    this.log("error", "exception", {
+      reqBody: JSON.stringify(req),
+      error: err.message,
+    });
+    next();
+  };
+
   log(level, type, logData) {
     const labels = { component: logging.source, level: level, type: type };
     const values = [this.nowString(), this.sanitize(logData)];
@@ -48,7 +71,6 @@ class Logger {
 
   sendLogToGrafana(event) {
     const body = JSON.stringify(event);
-    console.log(body);
     fetch(`${logging.url}`, {
       method: "post",
       body: body,
@@ -61,4 +83,5 @@ class Logger {
     });
   }
 }
+
 module.exports = new Logger();
