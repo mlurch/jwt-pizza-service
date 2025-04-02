@@ -34,15 +34,6 @@ class Logger {
     next();
   };
 
-  exceptionLogger = (err, req, res, next) => {
-    console.log("pee pee poo poo");
-    this.log("error", "exception", {
-      reqBody: JSON.stringify(req),
-      error: err.message,
-    });
-    next();
-  };
-
   log(level, type, logData) {
     const labels = { component: logging.source, level: level, type: type };
     const values = [this.nowString(), this.sanitize(logData)];
@@ -79,7 +70,7 @@ class Logger {
         Authorization: `Bearer ${logging.userId}:${logging.apiKey}`,
       },
     }).then((res) => {
-      if (!res.ok) console.log("Failed to send log to Grafana");
+      if (!res.ok) console.error("Failed to send log to Grafana");
     });
   }
 }

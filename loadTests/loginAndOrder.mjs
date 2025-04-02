@@ -59,7 +59,6 @@ export function scenario_1() {
         "status equals 200": (response) => response.status.toString() === "200",
       })
     ) {
-      console.log(response.body);
       fail("Login was *not* 200");
     }
 
