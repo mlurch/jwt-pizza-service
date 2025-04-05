@@ -93,6 +93,12 @@ function sendMetricToGrafana(metricName, metricValue, type, unit) {
                     {
                       asFloat: metricValue,
                       timeUnixNano: Date.now() * 1000000,
+                      attributes: [
+                        {
+                          key: "source",
+                          value: { stringValue: metrics.source },
+                        },
+                      ],
                     },
                   ],
                 },
