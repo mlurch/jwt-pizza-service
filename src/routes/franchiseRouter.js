@@ -15,7 +15,7 @@ franchiseRouter.endpoints = [
       {
         id: 1,
         name: "pizzaPocket",
-        admins: [{ id: 4, name: "pizza franchisee", email: "f@jwt.com" }],
+        admins: [{ id: 4, name: "Franchisee", email: "franchise@jwt.com" }],
         stores: [{ id: 1, name: "SLC", totalRevenue: 0 }],
       },
     ],
@@ -30,7 +30,7 @@ franchiseRouter.endpoints = [
       {
         id: 2,
         name: "pizzaPocket",
-        admins: [{ id: 4, name: "pizza franchisee", email: "f@jwt.com" }],
+        admins: [{ id: 4, name: "Franchisee", email: "franchise@jwt.com" }],
         stores: [{ id: 4, name: "SLC", totalRevenue: 0 }],
       },
     ],
@@ -40,10 +40,10 @@ franchiseRouter.endpoints = [
     path: "/api/franchise",
     requiresAuth: true,
     description: "Create a new franchise",
-    example: `curl -X POST localhost:3000/api/franchise -H 'Content-Type: application/json' -H 'Authorization: Bearer tttttt' -d '{"name": "pizzaPocket", "admins": [{"email": "f@jwt.com"}]}'`,
+    example: `curl -X POST localhost:3000/api/franchise -H 'Content-Type: application/json' -H 'Authorization: Bearer tttttt' -d '{"name": "pizzaPocket", "admins": [{"email": "franchise@jwt.com"}]}'`,
     response: {
       name: "pizzaPocket",
-      admins: [{ email: "f@jwt.com", id: 4, name: "pizza franchisee" }],
+      admins: [{ email: "franchise@jwt.com", id: 4, name: "Franchisee" }],
       id: 1,
     },
   },
