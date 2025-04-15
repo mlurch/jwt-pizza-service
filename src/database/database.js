@@ -447,9 +447,9 @@ class DB {
 
         if (!dbExists) {
           const defaultAdmin = {
-            name: "常用名字",
-            email: "a@jwt.com",
-            password: "admin",
+            name: "This Is Default",
+            email: "defaultadmin@jwt.com",
+            password: "thispasswordisunguessable",
             roles: [{ role: Role.Admin }],
           };
           this.addUser(defaultAdmin);
